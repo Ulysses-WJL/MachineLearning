@@ -1,4 +1,5 @@
 统计学习方法 + 机器学习实战
+
 **代码目录**
 
 第1章 统计学习方法概论
@@ -33,7 +34,7 @@ https://github.com/WenDesi/lihang_book_algorithm
 
 https://blog.csdn.net/tudaodiaozhale
 
-代码整理和修改：机器学习初学者  
+代码整理和修改：机器学习初学者
 
 微信公众号：机器学习初学者 ![gongzhong](images/gongzhong.jpg)
 
