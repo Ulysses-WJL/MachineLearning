@@ -1,4 +1,4 @@
-统计学习方法 + 机器学习实战
+统计学习方法 + 机器学习实战 + 机器学习 + scipycon-2018-sklearn-tut-zh + sklearn-cookbook-zh + ds-ai-tech-notes 等
 
 **代码目录**
 
