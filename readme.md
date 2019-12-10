@@ -27,12 +27,15 @@ generalization ability: 泛化能力, 学得的模型适用于新样本的能力
 ## H
 Heuristic Algorithm: 启发式(探索)算法, 启发式算法是一种技术，这种技术使得在可接受的计算成本内去搜寻最好的解，但不一定能保证所得的可行解和最优解，甚至在多数情况下，无法阐述所得解同最优解的近似程度.
 
+hyperparameter:　在机器学习的上下文中，超参数是在开始学习过程之前设置值的参数。 相反，其他参数的值通过训练得出。
+
 hypothesis: 假设
 
 hypothesis space: 假设空间, 由输入空间到输出空间的映射的集合
 
 ## I
 independent and identically distributed(i,i,d.): 独立同分布, 获得的每个样本都是独立地从这个分布上采样获得的
+inverse: 逆
 ## J
 ## K
 k-fold cross-validation: k折交叉验证
