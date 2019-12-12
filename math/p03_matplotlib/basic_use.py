@@ -74,3 +74,13 @@ plt.show()
 'k' 黑色
 'w' 白色
 """
+
+"""
+x轴反向
+ax = plt.gca()
+ax.invert_xaxis()
+"""
+"""
+有3个函数可以实现这种功能，分别是：semilogx（），semilogy（），loglog（）。它们分别表示对X轴，Y轴，XY轴取对数
+yscale('log') 改变y轴刻度
+"""
