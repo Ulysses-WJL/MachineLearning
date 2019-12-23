@@ -129,7 +129,7 @@ AdaBoost算法有多种推导方式, 比较容易理解的是基于"加性模型
 $$
 f(x) = \sum_{m=1}^M \alpha_m G_m(x)
 $$
- 算法的具体描述:
+###  算法的具体描述
 
 输入: 训练数据集$T=\{(x_1, y_1), (x_2, y_2), \cdots, (x_N, y_N)\}$, 其中$x_i \in \mathcal X \subseteq\mathbf R^n$, $y_i \in \mathcal Y=\{-1, +1\}$; 弱学习算法;
 
@@ -160,9 +160,9 @@ $$
      $$
      log是自然对数.
 
-     可以看到当$e_m \leq \frac 1 2$时，$\alpha_m \geq 0$, 并且$\alpha_m$随着$e_m$的减小而增大, 所以分类误差越小的基本分类器在最终分类器中的作用越大.
+     可以看到当$e_m \leq \frac 1 2$时，$\alpha_m \geq 0$, 并且$\alpha_m$随着$e_m$的减小而增大;  反之, 当$e_m \geq \frac 1 2$时,$\alpha_m \leq 0$, 并且$\alpha_m$随着$e_m$的增大而减小, 即基分类器$G_m$起的负作用也就越强.所以分类误差越小的基本分类器在最终分类器中的作用越大.
 
-   - (d) 更新训练数据集的权值分布
+   - (d) 更新训练数据集的权值分布(re-weighting)
      $$
      D_{m+1} = (w_{m+1, 1}, \cdots, w_{m+1, i}, \cdots, w_{m+1, N}) \\
      w_{m+1, i} =  \frac {w_{mi}} {Z_m} exp(-\alpha_m y_i G_m(x_i)) = \begin{cases} \frac {w_{mi}} {Z_m} e^{\alpha_m} , \quad \ y_i \neq G_m(x_i) \\ \frac {w_{mi}} {Z_m} e^{-\alpha_m} , \quad \ y_i = G_m(x_i) \end{cases} 
@@ -172,8 +172,8 @@ $$
      $$
      Z_m = \sum_{i=1}^N w_{mi}exp(-\alpha_my_iG_m(x_i))
      $$
-     被$G_m$误分类的样本权值得以**扩大**, 正确分类样本的权值得以**缩小**. 两者相比, 误分类样本的权值被放大了$e^{2\alpha_m} = \frac {1-e_m}{e_m}$倍. 因此, 误分类样本在下一轮学习中起到更大作用.
-   
+     被$G_m$误分类的样本权值得以**扩大**, 正确分类样本的权值得以**缩小**. 两者相比, 误分类样本的权值被放大了$e^{2\alpha_m} = \frac {1-e_m}{e_m}$倍, 这个比值是分类器分类正确的**几率**($odds$). 因此, 误分类样本在下一轮学习中起到更大作用.
+
 3. 构建基本分类器的线性组合
    $$
    f(x) = \sum_{m=1}^M \alpha_mG_m(x)
@@ -182,11 +182,81 @@ $$
    $$
    G(x) = sign(f(x)) = sign(\sum_{m=1}^M \alpha_mG_m(x))
    $$
-   系数$\alpha$表示基本分类器$G_m$的重要性, $f(x)$的符号决定实例$x$的类别, $f(x)$的绝对值表示分类的确性度. 
+   系数$\alpha$表示基本分类器$G_m$的重要性, $f(x)$的符号决定实例$x$的类别, $f(x)$的绝对值表示分类的确信度. 
+
+AdaBoost算法的特点是通过迭代每次学习一个基本分类器。每次迭代中，提高那些被前一轮分类器错误分类数据的权值，而降低那些被正确分类的数据的权值。最后，AdaBoost将基本分类器的线性组合作为强分类器，其中给分类误差率小的基本分类器以大的权值，给分类误差率大的基本分类器以小的权值。
+
+### 训练误差分析
+
+AdaBoost算法的训练误差界
+$$
+\frac 1 N \sum_{i=1}^NI(G(x_i) \neq y_i) \leq \frac 1 N \sum_i exp(-y_if(x_i))
+$$
+
+当$x_i$分类错误时, 右边$exp(-y_i f(x_i) ) \geq 1$, 而当分类正确时, $exp(-y_i f(x_i) ) \geq 0$可以直接推导不等式成立.
+
+由(15)和(16)式得到
+$$
+W_{mi}exp(-\alpha_my_iG_m(x_i)) = Z_mw_{m+1, i}
+$$
+那么不等式右边可以写成
+$$
+\frac 1 N \sum_i exp(-y_if(x_i))  =  \frac 1 N \sum_i exp(-\sum_{m=1}^M\alpha_my_iG_m(x_i)) \\
+= \sum_i w_{1i}\prod_{m=1}^Mexp(-\alpha_my_iG_m(x_i)) \\
+= Z_1 \sum_i w_{2i}\prod_{m=2}^Mexp(-\alpha_my_iG_m(x_i)) \\
+= Z_1Z_2 \sum_i w_{3i}\prod_{m=3}^Mexp(-\alpha_my_iG_m(x_i)) \\
+= \cdots \\
+= Z_1Z_2\cdots Z_{M-1} \sum_i w_{2i}exp(-\alpha_my_iG_m(x_i)) \\
+= \prod_{m=1}^M Z_m
+$$
+每次迭代时选择合适的$G_m$使得$Z_m$最小, 可以减少它在训练数据集上的分类误差率.
+
+当问题使二类分类问题时, 由(13)和(14)式, 得知
+$$
+Z_m = \sum_{i=1}^Nw_{mi}exp(-\alpha_m y_iG_m(x_i)) \\
+= \sum_{y_i \neq G_m(x_i)} w_{mi}e^{\alpha_m} + \sum_{y_i=G_m(x_i)} w_{mi}e^{-\alpha_m} \\
+=e_m\sqrt{\frac {1-e_m}{e_m}} + (1-e_m)\sqrt{\frac {e_m}{1-e_m}} \\
+=2\sqrt{e_m(1-e_m)}
+$$
+令$\gamma_{m} = \frac 1 2 -e_m$ ,  则$Z_m = \sqrt{1-4\gamma_m^2}$.  根据$e^x$和$\sqrt{1-x}$在$x=0$处地泰勒展开推导出
+$$
+\prod_{m=1}^M Z_m= \prod_{m=1}^M \sqrt{1-4\gamma_m^2}\leq exp(-2\sum_{m=1}^N\gamma_m^2)
+$$
+
+> Taylor公式 
+> $$
+> T_n(x) = f(x_0) + f'(x_0)(x-x_0)+ \frac {f''(x_0)} {2!}(x-x_0)^n+ \cdots + \frac {f^{(n)(x_0)}}{n!}(x-x_0)^n
+
+> $$
+>
+
+由(23)式, 如果存在$\gamma > 0$, 对所有的$m$使得$\gamma_m \geq \gamma$, 则训练误差
+$$
+\frac 1 N \sum_{i=1}^NI(G(x_i) \neq y_i) \leq exp(-2M \gamma)
+$$
+会以指数级数下降, 而且在这里也不需要求出$\gamma_m$的下界. 
+
+### AdaBoost算法的解释
+
+AdaBoost算法的一个解释是该算法实际是**前向分步算法**(forward stagewise algorithm)的一个实现。在这个方法里，模型是**加法模型**，损失函数是**指数损失**，算法是前向分步算法。每一步中极小化损失函数
+$$
+\left(\beta_{m}, \gamma_{m}\right)=\arg \min _{\beta, \gamma} \sum_{i=1}^{N} L\left(y_{i}, f_{m-1}\left(x_{i}\right)+\beta b\left(x_{i} ; \gamma\right)\right)
+$$
+得 到 参 数$\beta_{m}, \gamma_{m}$, 更新$f_m(x) = f_{m-1}(x) + \beta_mb(x; \gamma_m)$, 最后线性组合得到加法模型.
+
+### 提升树Boosting Tree
+
+提升树是以分类树或回归树为基本分类器的提升方法。提升树被认为是统计学习中最有效的方法之一。实际采用加法模型与前向分布算法, 以决策树为基函数.
+$$
+f_M(x) = \sum_{m=1}^MT(x;\Theta_m)
+$$
+其中, $T(x; \Theta_m)$表示决策树, $\Theta_m$为决策树的参数, $M$为树的个数. 
+
 
 
 参考:
 
 - 机器学习-周志华
+- 统计学习方法-李航
 - [集成方法-随机森林和AdaBoost](https://github.com/apachecn/AiLearning/blob/master/docs/ml/7.%E9%9B%86%E6%88%90%E6%96%B9%E6%B3%95-%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97%E5%92%8CAdaBoost.md)
 - [Blending and Bagging](https://github.com/apachecn/ntu-hsuantienlin-ml/blob/master/25.md)
