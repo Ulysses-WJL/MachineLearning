@@ -226,7 +226,6 @@ $$
 > Taylor公式 
 > $$
 > T_n(x) = f(x_0) + f'(x_0)(x-x_0)+ \frac {f''(x_0)} {2!}(x-x_0)^n+ \cdots + \frac {f^{(n)(x_0)}}{n!}(x-x_0)^n
-
 > $$
 >
 
@@ -238,7 +237,15 @@ $$
 
 ### AdaBoost算法的解释
 
-AdaBoost算法的一个解释是该算法实际是**前向分步算法**(forward stagewise algorithm)的一个实现。在这个方法里，模型是**加法模型**，损失函数是**指数损失**，算法是前向分步算法。每一步中极小化损失函数
+AdaBoost算法的一个解释是该算法实际是**前向分步算法**(forward stagewise algorithm)的一个实现。
+
+**加法模型**(additive model)
+$$
+f(x) = \sum_{m=1}^M \beta_m b_m(x; \gamma_m)
+$$
+其中$b_m(x; \gamma_m)$是**基函数**, $\gamma_m$为基函数的参数, $\beta_m$为基函数的系数.
+
+在前向分步算法中，模型是**加法模型**，损失函数是**指数损失**，算法是前向分步算法。每一步中极小化损失函数
 $$
 \left(\beta_{m}, \gamma_{m}\right)=\arg \min _{\beta, \gamma} \sum_{i=1}^{N} L\left(y_{i}, f_{m-1}\left(x_{i}\right)+\beta b\left(x_{i} ; \gamma\right)\right)
 $$
@@ -246,13 +253,70 @@ $$
 
 ### 提升树Boosting Tree
 
-提升树是以分类树或回归树为基本分类器的提升方法。提升树被认为是统计学习中最有效的方法之一。实际采用加法模型与前向分布算法, 以决策树为基函数.
+提升树是以分类树或回归树为基本分类器的提升方法。提升树被认为是统计学习中最有效的方法之一。实际采用加法模型与前向分布算法, 以决策树为基函数, 可以看作是决策树的加法模型.
 $$
 f_M(x) = \sum_{m=1}^MT(x;\Theta_m)
 $$
 其中, $T(x; \Theta_m)$表示决策树, $\Theta_m$为决策树的参数, $M$为树的个数. 
 
+#### 提升树算法
 
+针对不同问题的提升树算法的主要区别在于使用的损失函数不同.
+
+对于二类分类问题, 提升树算法只需要前面的AdaBoost算法中的基分类器限制为二类分类树.
+
+对于回归问题, 使用**平方误差**(回归树使用的就是平方误差)损失函数, 步骤:
+1. 初始化$f_0(x)=0$
+1. 对$m=1,2,\dots,M$
+   1. 计算残差
+   $$
+   r_{mi}=y_i-f_{m-1}(x_i), i=1,2,\dots,N
+   $$
+   2. **拟合残差**$r_{mi}$学习一个回归树，得到$T(x;\Theta_m)$
+   3. 更新$f_m(x)=f_{m-1}(x)+T(x;\Theta_m)$
+1. 得到回归问题提升树
+   $$
+   f(x)=f_M(x)=\sum_{m=1}^MT(x;\Theta
+   $$
+
+#### 梯度提升法Gradient Boosted Decision Tree
+
+当损失函数是指数函数或平方函数时, 每一步的优化是很简单的.但对于一般函数而言, 往往每一步的优化不那么容易. 梯度提升法(GBDT)利用最速下降法的近似方法, 利用损失函数的负梯度在当前模型的值
+$$
+-[\frac {\partial L(y, f(x_i))}{\partial f(x_i)}]_{f(x) = f_{m-1}(x)}
+$$
+作为回归问题提升树算法中的残差的近似值, 拟合一个回归树.
+
+输入： 训练数据集$T={(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)}, x_i \in \cal x \sube \R^n, y_i \in \cal y \sube \R$；损失函数$L(y,f(x))$
+输出：回归树$\hat{f}(x)$
+步骤：
+
+1. 初始化
+   $$
+   f_0(x)=\arg\min\limits_c\sum_{i=1}^NL(y_i, c)
+   $$
+
+1. $m=1,2,\dots,M$
+1. $i=1,2,\dots,N$
+   $$
+   r_{mi}=-\left[\frac{\partial L(y_i, f(x_i))}{\partial f(x_i)}\right]_{f(x)=f_{m-1}(x)}
+   $$
+
+1. 对$r_{mi}$拟合一个回归树，得到第$m$棵树的叶节点区域$R_{mj}, j=1,2,\dots,J$
+1. $j=1,2,\dots,J$
+   $$
+   c_{mj}=\arg\min_c\sum_{xi\in R_{mj}}L(y_i,f_{m-1}(x_i)+c)
+   $$
+
+1. 更新
+   $$
+   f_m(x)=f_{m-1}(x)+\sum_{j=1}^Jc_{mj}I(x\in R_{mj})
+   $$
+
+1. 得到回归树
+   $$
+   \hat{f}(x)=f_M(x)=\sum_{m=1}^M\sum_{j=1}^Jc_{mj}I(x\in R_{mj})
+   $$
 
 参考:
 
