@@ -1,4 +1,12 @@
 #!/usr/bin/python
+# coding=utf-8
+'''
+@Author: Ulysses
+@Date: 2020-02-28 10:58:09
+@LastEditors: Ulysses
+@LastEditTime: 2020-03-01 20:16:07
+'''
+#!/usr/bin/python
 # coding:utf-8
 
 '''
@@ -15,6 +23,7 @@ from numpy import *
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
+
 file_dir = os.path.dirname(os.path.realpath(__file__))
 
 class MRsvm(MRJob):
@@ -22,7 +31,7 @@ class MRsvm(MRJob):
 
     def __init__(self, *args, **kwargs):
         super(MRsvm, self).__init__(*args, **kwargs)
-        file_ = open(os.path.join(file_dir, 'data/svmDat26'), 'r')
+        file_ = open(os.path.join(file_dir, 'data/svmDat1'), 'br')
         self.data = pickle.load(file_)
         self.w = 0
         self.eta = 0.69
@@ -88,7 +97,7 @@ class MRsvm(MRJob):
             yield (mapperNum, ['w', wMat.tolist()[0]])    # 发出 w
             if self.t < self.options.iterations:
                 yield (mapperNum, ['t', self.t+1])        # 增量 T
-                for j in range(self.k/self.numMappers):   # emit random ints for mappers iid
+                for j in range(self.k // self.numMappers):   # emit random ints for mappers iid
                     yield (mapperNum, ['x', random.randint(shape(self.data)[0])])
 
     def steps(self):
