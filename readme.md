@@ -11,9 +11,13 @@ brute: 暴力求解
 classification: 分类
 cluster: 簇, 每一个组叫簇
 clustering: 聚类 把训练集中的对象分为若干组
+capacity: 容量, 模型的容量是指其拟合各种函数的能力.容量低的模型可能很难拟合训练集.容量高的模型可能会过拟合
+
 ## D
+
 discriminate: 辨别
 distribution: 分布, 样本空间的全体样本服从的一种规律
+
 ## E
 entropy: 熵, 体系的混乱的程度
 estimation error: 估计误差
@@ -36,6 +40,7 @@ hypothesis space: 假设空间, 由输入空间到输出空间的映射的集合
 ## I
 independent and identically distributed(i,i,d.): 独立同分布, 获得的每个样本都是独立地从这个分布上采样获得的
 inverse: 逆
+
 ## J
 ## K
 k-fold cross-validation: k折交叉验证
