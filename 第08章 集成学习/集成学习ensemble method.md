@@ -256,7 +256,7 @@ $$
 = Z_1 \sum_i w_{2i}\prod_{m=2}^Mexp(-\alpha_my_iG_m(x_i)) \\
 = Z_1Z_2 \sum_i w_{3i}\prod_{m=3}^Mexp(-\alpha_my_iG_m(x_i)) \\
 = \cdots \\
-= Z_1Z_2\cdots Z_{M-1} \sum_i w_{2i}exp(-\alpha_my_iG_m(x_i)) \\
+= Z_1Z_2\cdots Z_{M-1} \sum_i w_{Mi}exp(-\alpha_my_iG_m(x_i)) \\
 = \prod_{m=1}^M Z_m
 $$
 每次迭代时选择合适的$G_m$使得$Z_m$最小, 可以减少它在训练数据集上的分类误差率.
@@ -339,9 +339,10 @@ $$
 $$
 作为回归问题提升树算法中的残差的近似值, 拟合一个回归树.
 
-输入： 训练数据集$T={(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)}, x_i \in \cal x \sube \R^n, y_i \in \cal y \sube \R$；损失函数$L(y,f(x))$
+输入： 训练数据集$T={(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)}, x_i \sube \R^n , y_i\sube \R$；损失函数$L(y,f(x))$
 输出：回归树$\hat{f}(x)$
 步骤：
+, x_i \in \cal x \sube \R^n, y_i \in \cal y \sube \R
 
 1. 初始化
    $$
